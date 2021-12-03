@@ -1,0 +1,12 @@
+#pragma once
+#include <GL/glew.h>
+#include <GL/freeglut.h> // nu trebuie uitat freeglut.h
+#include <GLM.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
+#include <glfw3.h>
+#pragma comment (lib, "freeglut.lib")
+#pragma comment (lib, "glew32.lib")
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
