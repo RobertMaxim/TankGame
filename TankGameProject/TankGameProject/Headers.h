@@ -6,9 +6,11 @@
 #include <gtc/type_ptr.hpp>
 #include <gtx/rotate_vector.hpp>
 #include <gtx/vector_angle.hpp>
-
 #include <glfw3.h>
 #pragma comment (lib, "freeglut.lib")
 #pragma comment (lib, "glew32.lib")
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
