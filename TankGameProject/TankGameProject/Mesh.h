@@ -2,6 +2,7 @@
 #include "Vertex.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Texture.h"
 #include <vector>
 
 class Mesh {
@@ -16,6 +17,6 @@ public:
 	Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures);
 
 	// Draws the mesh
-	void Draw(Shader& shader, Camera& camera);
+	void Draw(GLuint shaderID, Camera& camera);
 
 };
