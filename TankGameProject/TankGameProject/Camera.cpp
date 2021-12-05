@@ -7,6 +7,11 @@ Camera::Camera(int width, int height, glm::vec3 position)
 	Position = position;
 }
 
+const glm::mat4 Camera::GetViewMatrix() const
+{
+	return glm::lookAt(Position, Position + Orientation, Up);
+}
+
 void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane)
 {
 	// Initializes matrices since otherwise they will be the null matrix

@@ -19,6 +19,8 @@ public:
 
 	Camera(int width, int height, glm::vec3 position);
 
+	const glm::mat4 GetViewMatrix() const;
+	//const glm::mat4 GetProjMatrix() const;
 	void updateMatrix(float FOVdeg, float nearPlane, float farPlane); // adapteaza la vertex shader matricea camerei
 	void Matrix(Shader& shader, const char* uniform); // exporta in shader matricea camerei
 	void Inputs(GLFWwindow* window); 

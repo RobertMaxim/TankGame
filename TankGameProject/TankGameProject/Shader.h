@@ -18,9 +18,9 @@ public:
    GLuint GetID() const;
 
     // MVP
-    unsigned int loc_model_matrix;
-    unsigned int loc_view_matrix;
-    unsigned int loc_projection_matrix;
+    unsigned int WorldMatrixLocation;
+    unsigned int ViewMatrixLocation;
+    unsigned int ProjMatrixLocation;
 
     // utility uniform functions
     void SetVec3(const std::string& name, const glm::vec3& value) const;

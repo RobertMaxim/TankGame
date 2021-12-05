@@ -22,7 +22,7 @@ GLuint Shader::GetID() const
 
 void Shader::SetVec3(const std::string& name, const glm::vec3& value) const
 {
-    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
 }
 
 void Shader::SetVec3(const std::string& name, float x, float y, float z) const
@@ -32,14 +32,13 @@ void Shader::SetVec3(const std::string& name, float x, float y, float z) const
 
 void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
 {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::SetFloat(const std::string& name, float fValue) const
 {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), fValue);
 }
-
 void Shader::Init(const char* vertexPath, const char* fragmentPath)
 {
     // 1. retrieve the vertex/fragment source code from filePath
@@ -89,6 +88,17 @@ void Shader::Init(const char* vertexPath, const char* fragmentPath)
     glAttachShader(ID, fragment);
     glLinkProgram(ID);
     CheckCompileErrors(ID, "PROGRAM");
+
+    glUseProgram(ID);
+
+    ProjMatrixLocation = glGetUniformLocation(ID, "projection");
+    ViewMatrixLocation = glGetUniformLocation(ID, "view");
+    WorldMatrixLocation = glGetUniformLocation(ID, "model");
+
+    glUniform1i(glGetUniformLocation(ID, "texture1"), 0);
+    glUniform1i(glGetUniformLocation(ID, "texture2"), 1);
+
+    glUniform1f(glGetUniformLocation(ID, "mixValue"), 0.5);
 
     // 3. delete the shaders as they're linked into our program now and no longer necessery
     glDeleteShader(vertex);
