@@ -1,5 +1,5 @@
 #pragma once
-#include "Headers.h"
+#include "Shader.h"
 
 class Camera
 {
@@ -20,6 +20,6 @@ public:
 	Camera(int width, int height, glm::vec3 position);
 
 	void updateMatrix(float FOVdeg, float nearPlane, float farPlane); // adapteaza la vertex shader matricea camerei
-	void Matrix(GLuint shader, const char* uniform); // exporta in shader matricea camerei
+	void Matrix(Shader& shader, const char* uniform); // exporta in shader matricea camerei
 	void Inputs(GLFWwindow* window); 
 };

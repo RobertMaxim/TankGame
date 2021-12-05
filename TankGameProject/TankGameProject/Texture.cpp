@@ -1,4 +1,7 @@
 #include "Texture.h"
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum format, GLenum pixelType)
 {
@@ -43,12 +46,12 @@ Texture::Texture(const char* image, const char* texType, GLuint slot, GLenum for
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::texUnit(GLuint shaderID, const char* uniform, GLuint unit)
+void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
 {
 	// Gets the location of the uniform
-	GLuint texUni = glGetUniformLocation(shaderID, uniform);
+	GLuint texUni = glGetUniformLocation(shader.GetID(), uniform);
 	// Shader needs to be activated before changing the value of a uniform
-	glUseProgram(shaderID);
+	glUseProgram(shader.GetID());
 	// Sets the value of the uniform
 	glUniform1i(texUni, unit);
 }
@@ -68,3 +71,4 @@ void Texture::Delete()
 {
 	glDeleteTextures(1, &ID);
 }
+#endif

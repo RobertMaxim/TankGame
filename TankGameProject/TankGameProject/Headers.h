@@ -9,8 +9,7 @@
 #include <glfw3.h>
 #pragma comment (lib, "freeglut.lib")
 #pragma comment (lib, "glew32.lib")
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>

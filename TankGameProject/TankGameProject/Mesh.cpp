@@ -3,9 +3,9 @@
 
 Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::vector <Texture>& textures)
 {
-	Mesh::vertices = vertices;
-	Mesh::indices = indices;
-	Mesh::textures = textures;
+	this->vertices = vertices;
+	this->indices = indices;
+	this->textures = textures;
 
 	glBindVertexArray(vaoID);
 	// Generates Vertex Buffer Object and links it to vertices
@@ -45,9 +45,9 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::Draw(GLuint shaderID, Camera& camera)
+void Mesh::Draw(Shader& shaderx, Camera& camera)
 {
-	glUseProgram(shaderID);
+	glUseProgram(shaderx.GetID());
 
 	glBindVertexArray(vaoID);
 
@@ -65,12 +65,12 @@ void Mesh::Draw(GLuint shaderID, Camera& camera)
 		{
 			num = std::to_string(numSpecular++);
 		}
-		textures[i].texUnit(shaderID, (type + num).c_str(), i);
+		textures[i].texUnit(shaderx, (type + num).c_str(), i);
 		textures[i].Bind();
 	}
 	// Take care of the camera Matrix
-	glUniform3f(glGetUniformLocation(shaderID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-	camera.Matrix(shaderID, "camMatrix");
+	glUniform3f(glGetUniformLocation(shaderx.GetID(), "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+	camera.Matrix(shaderx, "camMatrix");
 
 	// Draw the actual mesh
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
