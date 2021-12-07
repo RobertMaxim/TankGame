@@ -51,7 +51,7 @@ Mesh::Mesh(std::vector <Vertex>& vertices, std::vector <GLuint>& indices, std::v
 	glBindVertexArray(0);
 }
 
-void Mesh::Draw(Shader& shaderx, Camera& camera)
+void Mesh::Draw(Shader& shaderx, Camera* camera)
 {
 	glUseProgram(shaderx.GetID());
 
@@ -75,8 +75,8 @@ void Mesh::Draw(Shader& shaderx, Camera& camera)
 		textures[i].Bind();
 	}
 	// Take care of the camera Matrix
-	glUniform3f(glGetUniformLocation(shaderx.GetID(), "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-	camera.Matrix(shaderx, "camMatrix");
+	glUniform3f(glGetUniformLocation(shaderx.GetID(), "camPos"), camera->getPositionVec().x , camera->getPositionVec().y, camera->getPositionVec().z);
+	camera->Matrix(shaderx, "camMatrix");
 
 	// Draw the actual mesh
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

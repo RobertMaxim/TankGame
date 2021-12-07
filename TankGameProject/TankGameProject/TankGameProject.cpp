@@ -6,12 +6,13 @@ namespace fs = std::filesystem;
 
 #define width 800
 #define height 800
+Camera* pCamera = nullptr;
 
 Vertex vertices[] = {
-	   glm::vec3(-0.5f,0.0f,0.5f), glm::vec3(1.0f,0.0f,0.0f), glm::vec2(0.0f,1.0f), glm::vec3(0.0f,1.0f,0.0f),
-	   glm::vec3(-0.5f,0.0f,-0.5f),glm::vec3(0.0f,1.0f,0.0f), glm::vec2(0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
-	   glm::vec3(0.5f,0.0f,-0.5f), glm::vec3(0.0f,0.0f,1.0f), glm::vec2(1.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
-	   glm::vec3(0.5f,0.0f,0.5f), glm::vec3(0.0f,0.0f,1.0f), glm::vec2(1.0f,1.0f), glm::vec3(0.0f,1.0f,0.0f)
+	   glm::vec3(-5.5f,0.0f,0.5f), glm::vec3(0.0f,0.0f,0.0f), glm::vec2(0.0f,10.0f), glm::vec3(0.0f,1.0f,0.0f),
+	   glm::vec3(-5.5f,0.0f,-0.5f),glm::vec3(0.0f,0.0f,0.0f), glm::vec2(0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
+	   glm::vec3(5.5f,0.0f,-0.5f), glm::vec3(0.0f,0.0f,0.0f), glm::vec2(10.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
+	   glm::vec3(5.5f,0.0f,0.5f), glm::vec3(0.0f,0.0f,0.0f), glm::vec2(10.0f,10.0f), glm::vec3(0.0f,1.0f,0.0f)
 };
 
 
@@ -21,22 +22,23 @@ GLuint indices[] = {
 };
 
 
-void RenderFunction(Shader& shaderProgram, Texture textures[], Camera& pCamera, Mesh& floor)
+void RenderFunction(Shader& shaderProgram, Texture textures[], Camera* pCamera, Mesh& floor)
 {
 	glm::vec3 cubePositions[] = {
 	   glm::vec3(-1.0f, 0.0f,-5.0f),
 	   glm::vec3(0.0f,0.0f,-5.0f),
 	   glm::vec3(-1.0f,0.0f,-4.0f),
 	   glm::vec3(0.0f,0.0f,-4.0f),
-	   glm::vec3(-1.0f, 0.0f, -3.0f),
-	   glm::vec3(0.0f, 0.0f, -3.0f),
-	   glm::vec3(-1.0f,  0.0f,   -2.0f),
-	   glm::vec3(0.0f, 0.0f, -2.0f),
-	   glm::vec3(-1.0f,  0.0f, -1.0f),
+	   glm::vec3(-1.0f, 0.0f,-3.0f),
+	   glm::vec3(0.0f,0.0f,-3.0f),
+	   glm::vec3(-1.0f,0.0f,-2.0f),
+	   glm::vec3(0.0f,0.0f,-2.0f),
+	   glm::vec3(-1.0f,0.0f,-1.0f),
 	   glm::vec3(0.0f,0.0f,-1.0f),
 	   glm::vec3(-1.0f,0.0f,0.0f),
 	   glm::vec3(0.0f,0.0f,0.0f),
 	   glm::vec3(-1.0f,0.0f,5.0f),
+	   glm::vec3(0.0f,0.0f,5.0f),
 	   glm::vec3(-1.0f,0.0f,4.0f),
 	   glm::vec3(0.0f,0.0f,4.0f),
 	   glm::vec3(-1.0f,0.0f,3.0f),
@@ -70,19 +72,13 @@ void RenderFunction(Shader& shaderProgram, Texture textures[], Camera& pCamera, 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textures[1].ID);
 
-	std::string proj = "projection";
-	glm::mat4 projection = pCamera.cameraMatrix;
+	glm::mat4 projection = pCamera->GetProjectionMatrix();
 	glUniformMatrix4fv(shaderProgram.ProjMatrixLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-	glm::mat4 view = pCamera.GetViewMatrix();
+	glm::mat4 view = pCamera->GetViewMatrix();
 	glUniformMatrix4fv(shaderProgram.ViewMatrixLocation, 1, GL_FALSE, glm::value_ptr(view));
 
-	/*glm::mat4 view;
-	float radius = 10.0f;
-	float camX = sin(glfwGetTime()) * radius;
-	float camZ = cos(glfwGetTime()) * radius;
-	view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glUniformMatrix4fv(ViewMatrixLocation, 1, GL_FALSE, glm::value_ptr(view));*/
+
 
 	glBindVertexArray(floor.getVAO());
 
@@ -100,8 +96,51 @@ void RenderFunction(Shader& shaderProgram, Texture textures[], Camera& pCamera, 
 	}
 }
 
+double deltaTime = 0.0f;
+double lastFrame = 0.0f;
 
 
+void processInput(GLFWwindow* window, Camera* pCamera)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		pCamera->ProcessKeyboard(BACKWARD, (float)deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		pCamera->ProcessKeyboard(LEFT, (float)deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		pCamera->ProcessKeyboard(RIGHT, (float)deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		pCamera->ProcessKeyboard(UP, (float)deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		pCamera->ProcessKeyboard(DOWN, (float)deltaTime);
+
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		int scrwidth, scrheight;
+		glfwGetWindowSize(window, &scrwidth, &scrheight);
+		pCamera->Reset(scrwidth, scrheight);
+	}
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int scrwidth, int scrheight)
+{
+	// make sure the viewport matches the new window dimensions; note that width and 
+	// height will be significantly larger than specified on retina displays.
+	pCamera->Reshape(scrwidth, scrheight);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	pCamera->MouseControl((float)xpos, (float)ypos);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yOffset)
+{
+	pCamera->ProcessMouseScroll((float)yOffset);
+}
 int main()
 {
 	glfwInit();
@@ -109,33 +148,35 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// glfw window creation
+
 	GLFWwindow* window = glfwCreateWindow(width, height, "Tank Simulator", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
+	pCamera = new Camera (width, height, glm::vec3(0.0f, 3.0f, 5.0f));
 
 	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	glewInit();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // culoarea de fond a ecranului
-	//glEnable(GL_CULL_FACE);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_LIGHTING);
 
-	//glFrontFace(GL_CCW);
-	//glCullFace(GL_BACK);
-
+	
 	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
 	std::string texturePath = "/Resources/";
 
 	Texture textures[] = {
-		Texture((parentDir + texturePath + "grass.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
-		Texture((parentDir + texturePath + "ice.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
+		Texture((parentDir + texturePath + "ice.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
+		Texture((parentDir + texturePath + "grass.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
 	};
 
 	Shader shaderProgram("Field.vs", "Field.fs");
@@ -148,20 +189,20 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 	// Create camera
-	Camera pCamera(width, height, glm::vec3(-1.0f, 0.0f, -5.0f));
-
 
 	while (!glfwWindowShouldClose(window)) {
+		// per-frame time logic
+		double currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 		// Specify the color of the background
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		processInput(window, pCamera);
 
 		// Handles camera inputs
-		pCamera.Inputs(window);
 		// Updates and exports the camera matrix to the Vertex Shader
-		pCamera.updateMatrix(45.0f, 0.1f, 100.0f);
 
 
 		// Draws different meshes
