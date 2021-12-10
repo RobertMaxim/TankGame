@@ -173,13 +173,13 @@ int main()
 	
 	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
 	std::string texturePath = "/Resources/";
-
+	unsigned int floorTexture = CreateTexture(parentDir+texturePath + "\\ColoredFloor.jpg");
 	Texture textures[] = {
 		Texture((parentDir + texturePath + "ice.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
-		Texture((parentDir + texturePath + "grass.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
+		Texture((parentDir + texturePath + "ice.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
 	};
 
-	Shader shaderProgram("Field.vs", "Field.fs");
+	Shader shadowMappingShader("Field.vs", "Field.fs");
 
 	std::vector <Vertex> verts(vertices, vertices + sizeof(vertices) / sizeof(Vertex));
 	std::vector <GLuint> ind(indices, indices + sizeof(indices) / sizeof(GLuint));
@@ -189,6 +189,11 @@ int main()
 
 	glEnable(GL_DEPTH_TEST);
 	// Create camera
+
+	shadowMappingShader.Use();
+	shadowMappingShader.SetInt("diffuseTexture", 0);
+	shadowMappingShader.SetInt("shadowMap", 1);
+
 
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
@@ -206,10 +211,10 @@ int main()
 
 
 		// Draws different meshes
-		floor.Draw(shaderProgram, pCamera);
+		floor.Draw(shadowMappingShader, pCamera);
 		//light.Draw(lightShader, pCamera);
 
-		RenderFunction(shaderProgram, textures, pCamera, floor);
+		RenderFunction(shadowMappingShader, textures, pCamera, floor);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
@@ -224,3 +229,4 @@ int main()
 
 	return 0;
 }
+safasfsafas
