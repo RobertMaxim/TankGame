@@ -144,16 +144,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="TankGameProject.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GenerateNoiseMap.h" />
     <ClInclude Include="Headers.h" />
+    <ClInclude Include="Loader.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Field.fs" />

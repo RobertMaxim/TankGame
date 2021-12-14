@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Terrain.h"
 
 #include<filesystem>
 
@@ -173,11 +174,12 @@ int main()
 	
 	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
 	std::string texturePath = "/Resources/";
-	unsigned int floorTexture = CreateTexture(parentDir+texturePath + "\\ColoredFloor.jpg");
 	Texture textures[] = {
 		Texture((parentDir + texturePath + "ice.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
 		Texture((parentDir + texturePath + "ice.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
 	};
+
+	TerrainClass terrain;
 
 	Shader shadowMappingShader("Field.vs", "Field.fs");
 
@@ -191,9 +193,6 @@ int main()
 	// Create camera
 
 	shadowMappingShader.Use();
-	shadowMappingShader.SetInt("diffuseTexture", 0);
-	shadowMappingShader.SetInt("shadowMap", 1);
-
 
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
@@ -209,9 +208,8 @@ int main()
 		// Handles camera inputs
 		// Updates and exports the camera matrix to the Vertex Shader
 
-
 		// Draws different meshes
-		floor.Draw(shadowMappingShader, pCamera);
+		//floor.Draw(shadowMappingShader, pCamera);
 		//light.Draw(lightShader, pCamera);
 
 		RenderFunction(shadowMappingShader, textures, pCamera, floor);
@@ -229,4 +227,3 @@ int main()
 
 	return 0;
 }
-safasfsafas
