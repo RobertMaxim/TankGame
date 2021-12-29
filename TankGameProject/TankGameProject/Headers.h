@@ -1,4 +1,5 @@
 #pragma once
+//#include <GL/glew.h>
 #include <GL/glew.h>
 #include <GL/freeglut.h> // nu trebuie uitat freeglut.h
 #include <GLM.hpp>
@@ -9,6 +10,7 @@
 #include <glfw3.h>
 #pragma comment (lib, "freeglut.lib")
 #pragma comment (lib, "glew32.lib")
+
 
 #include <iostream>
 #include <fstream>

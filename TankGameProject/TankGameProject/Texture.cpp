@@ -67,6 +67,54 @@ void Texture::Unbind()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Texture Texture::loadCubemap(const std::vector<std::string>& texpaths){
+
+	// If not enough images, return empty texture.
+
+	if (texpaths.size() != 6) {
+		return (*this);
+	}
+
+	// Create and bind texture.
+
+	GLuint textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+
+	// Texture settings.
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	std::vector<unsigned char> image;
+	int components = 4;
+	int width = 0;
+	int height = 0;
+
+	// For each side, load the image and upload it in the right slot.
+	// We don't need to flip them.
+
+	stbi_set_flip_vertically_on_load(false);
+
+	for (size_t side = 0; side < 6; ++side) {
+		unsigned char* image = stbi_load(texpaths[side].c_str(), &width, &height, NULL, components);
+		if (image == NULL) {
+			std::cerr << "Unable to load the texture at path " << texpaths[side] << "." << std::endl;
+			return (*this);
+		}
+		glTexImage2D(GLenum(GL_TEXTURE_CUBE_MAP_POSITIVE_X + side), 0, GL_SRGB8_ALPHA8 /*: GL_RGBA*/, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(image[0]));
+		free(image);
+	}
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	this->ID = textureId;
+	return (*this);
+}
+
+
 void Texture::Delete()
 {
 	glDeleteTextures(1, &ID);

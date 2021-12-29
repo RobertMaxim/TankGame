@@ -1,6 +1,6 @@
 #include "Mesh.h"
 #include "Terrain.h"
-
+#include "OBJLoader.h"
 #include<filesystem>
 
 namespace fs = std::filesystem;
@@ -10,10 +10,10 @@ namespace fs = std::filesystem;
 Camera* pCamera = nullptr;
 
 Vertex vertices[] = {
-	   glm::vec3(-5.5f,0.0f,0.5f), glm::vec3(0.0f,0.0f,0.0f), glm::vec2(0.0f,10.0f), glm::vec3(0.0f,1.0f,0.0f),
-	   glm::vec3(-5.5f,0.0f,-0.5f),glm::vec3(0.0f,0.0f,0.0f), glm::vec2(0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
-	   glm::vec3(5.5f,0.0f,-0.5f), glm::vec3(0.0f,0.0f,0.0f), glm::vec2(10.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
-	   glm::vec3(5.5f,0.0f,0.5f), glm::vec3(0.0f,0.0f,0.0f), glm::vec2(10.0f,10.0f), glm::vec3(0.0f,1.0f,0.0f)
+	   glm::vec3(-5.5f,0.0f,0.5f)/*, glm::vec3(0.0f,0.0f,0.0f),*/, glm::vec2(0.0f,10.0f), glm::vec3(0.0f,1.0f,0.0f),
+	   glm::vec3(-5.5f,0.0f,-0.5f)/*,glm::vec3(0.0f,0.0f,0.0f)*/, glm::vec2(0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
+	   glm::vec3(5.5f,0.0f,-0.5f)/*, glm::vec3(0.0f,0.0f,0.0f)*/, glm::vec2(10.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
+	   glm::vec3(5.5f,0.0f,0.5f)/*, glm::vec3(0.0f,0.0f,0.0f)*/, glm::vec2(10.0f,10.0f), glm::vec3(0.0f,1.0f,0.0f)
 };
 
 
@@ -50,17 +50,6 @@ void RenderFunction(Shader& shaderProgram, Texture textures[], Camera* pCamera, 
 	   glm::vec3(0.0f,0.0f,1.0f),
 	};
 
-	/*glm::vec3 cubePositions[] = {
-		 glm::vec3(0.0f,  0.0f,   0.0f),
-	   glm::vec3(-5.0f,  5.0f,  5.0f),
-	   glm::vec3(-5.0f, -5.0f,  5.0f),
-	   glm::vec3(5.0f, -5.0f,  5.0f),
-	   glm::vec3(5.0f,  5.0f,  5.0f),
-	   glm::vec3(-5.0f,  5.0f, -5.0f),
-	   glm::vec3(-5.0f, -5.0f, -5.0f),
-	   glm::vec3(5.0f, -5.0f, -5.0f),
-	   glm::vec3(5.0f,  5.0f, -5.0f),
-	};*/
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -95,6 +84,8 @@ void RenderFunction(Shader& shaderProgram, Texture textures[], Camera* pCamera, 
 		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &indexArraySize);
 		glDrawElements(GL_TRIANGLES, indexArraySize / sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 	}
+
+
 }
 
 double deltaTime = 0.0f;
@@ -105,7 +96,6 @@ void processInput(GLFWwindow* window, Camera* pCamera)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		pCamera->ProcessKeyboard(FORWARD, (float)deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -142,8 +132,23 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yOffset)
 {
 	pCamera->ProcessMouseScroll((float)yOffset);
 }
-int main()
+
+int main(int argc, char** argv)
 {
+	/*read("Tiger_I.obj");
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
+	glutInitWindowSize(640, 480);
+	glutCreateWindow("Tank Simulator");
+	glutDisplayFunc(display);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
+	std::string texturePath = "/Resources/";
+	Texture textures[] = {
+		Texture((parentDir + texturePath + "grass.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
+		Texture((parentDir + texturePath + "ice.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
+	};*/
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -156,7 +161,7 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
-	pCamera = new Camera (width, height, glm::vec3(0.0f, 3.0f, 5.0f));
+	pCamera = new Camera(width, height, glm::vec3(0.0f, 3.0f, 5.0f));
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -165,21 +170,20 @@ int main()
 
 	glewInit();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_LIGHTING);
 
-	
+
 	std::string parentDir = (fs::current_path().fs::path::parent_path()).string();
 	std::string texturePath = "/Resources/";
 	Texture textures[] = {
-		Texture((parentDir + texturePath + "ice.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
+		Texture((parentDir + texturePath + "grass.jpg").c_str(),"diffuse", 0 ,GL_RGB,GL_UNSIGNED_BYTE),
 		Texture((parentDir + texturePath + "ice.jpg").c_str(),"specular", 0 , GL_RGB, GL_UNSIGNED_BYTE)
 	};
 
-	TerrainClass terrain;
 
 	Shader shadowMappingShader("Field.vs", "Field.fs");
 
@@ -194,6 +198,7 @@ int main()
 
 	shadowMappingShader.Use();
 
+
 	while (!glfwWindowShouldClose(window)) {
 		// per-frame time logic
 		double currentFrame = glfwGetTime();
@@ -205,25 +210,23 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		processInput(window, pCamera);
 
-		// Handles camera inputs
-		// Updates and exports the camera matrix to the Vertex Shader
-
+		
 		// Draws different meshes
 		//floor.Draw(shadowMappingShader, pCamera);
 		//light.Draw(lightShader, pCamera);
 
+
+		//load.display(window,width,height);
 		RenderFunction(shadowMappingShader, textures, pCamera, floor);
+
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
 		glfwPollEvents();
 	}
 
-	//Cleanup();
 
-	glfwDestroyWindow(window);
-	// Terminate GLFW before ending the program
-	glfwTerminate();
+	glEnable(GL_DEPTH_TEST);
 
 	return 0;
 }

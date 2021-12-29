@@ -1,6 +1,6 @@
 #pragma once
 #include "Shader.h"
-
+#include <vector>
 class Texture
 {
 public:
@@ -17,5 +17,8 @@ public:
 	// Unbinds a texture
 	void Unbind();
 	// Deletes a texture
+
+	Texture loadCubemap(const std::vector<std::string>& texpaths);
+
 	void Delete();
 };
