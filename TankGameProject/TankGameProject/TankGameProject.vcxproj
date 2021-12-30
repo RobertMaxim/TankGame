@@ -80,6 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\..\..\_external\freeglut\include;..\..\..\_external\glew-2.2.0\include;..\..\..\_external\glfw-3.3.4.bin.WIN32\include\GLFW;..\..\..\_external\glm;..\..\..\_external\stb-master;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\_external\freeglut\lib;..\..\..\_external\glew-2.2.0\lib\Release\Win32;..\..\..\_external\glfw-3.3.4.bin.WIN32\lib-vc2019;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -121,10 +123,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,10 +149,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="TankGameProject.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -161,15 +163,16 @@
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Field.fs" />
-    <None Include="Field.vs" />
+    <None Include="blending.fs" />
+    <None Include="blending.vs" />
+    <None Include="Floor.fs" />
+    <None Include="Floor.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
